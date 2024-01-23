@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My E-commerce Store</title>
+  <!-- Include your stylesheets and scripts here -->
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    .header-links {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+    }
+
+    .header-links a {
+      margin: 0 10px;
+      color: white;
+      text-decoration: none;
+    }
+
+    .header-links a:hover {
+      color: #ccc;
+    }
+
+    #seller-section {
+      margin: 20px;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    #seller-section h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-top: 10px;
+    }
+
+    input,
+    textarea {
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+
+    button {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    a {
+      color: #333;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #555;
+    }
+    .header-links {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .header-links a {
+      margin: 0 10px;
+      color: white;
+    }
+
+  .dropdown {
+    display: inline-block;
+    position: relative;
+  }
+
+  .dropbtn {
+    background-color: #3498db;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    background-color: #f9f9f9;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    min-width: 160px;
+    right: 0; /* Position the dropdown to the right side of the button */
+  }
+
+  .dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #ddd;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  .home-link {
+    color: white;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-links">
+      <h1>Add Product</h1>
+      <div>
+        <a href="<%= root_path %>" class="home-link">Home</a>
+      <!-- Check if the user is signed in -->
+        <% if user_signed_in? %>
+          <div class="dropdown">
+            <button class="dropbtn">User Menu</button>
+            <div class="dropdown-content">
+              <%= link_to "Cart", cart_path %>
+              <% if current_user.role_id == 4 %> <!-- Add a check for seller status -->
+                <%= link_to "Add Product", category_pre_seller_path %> <!-- Link to the seller section -->
+              <% end %>
+              <%= link_to "Profile", edit_user_registration_path %>
+              <%= link_to "Logout", destroy_user_session_path, method: :delete %>
+            </div>
+          </div>
+        <% else %>
+          <div>
+            <%= link_to "Sign In", new_user_session_path %>
+            <%= link_to "Sign Up", new_user_registration_path %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </header>
+
+  <section id="seller-section">
+      <h2>Add Product</h2>
+      <%= form_for @product, url: category_create_product_path, multipart: true do |f| %>
+        <!-- Product details input fields -->
+        <label for="product-name">Product Name:</label>
+        <%= f.text_field :product_name, required: true %>
+
+        <label for="product-description">Product Description:</label>
+        <%= f.text_area :product_description, required: true %>
+
+        <label for="product-price">Product Price:</label>
+        <%= f.number_field :product_price, required: true %>
+
+        <label for="product-image">Product Image:</label>
+        <%= f.file_field :product_image, accept: 'image/*', required: true %>
+
+        <button type="submit">Add Product</button>
+      <% end %>
+    </section>
+
+  <footer>
+    <!-- Include footer content, links, and other information -->
+    <p>&copy; 2024 My E-commerce Store. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

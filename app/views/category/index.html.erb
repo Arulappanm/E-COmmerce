@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My E-commerce Store</title>
+  <!-- Include your stylesheets and scripts here -->
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    section {
+      margin: 20px;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    a {
+      color: #333;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #555;
+    }
+
+    .header-links {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .header-links a {
+      margin: 0 10px;
+      color: white;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .product {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .product img {
+      width: 100%; /* Set the width to 100% */
+      height: auto;
+      max-width: 100%; /* Add max-width to ensure responsiveness */
+      margin-bottom: 10px;
+    }
+/* Add these styles to your existing styles */
+
+    .product-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .purchase-button,
+    .add-to-cart-button {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .purchase-button:hover,
+    .add-to-cart-button:hover {
+      background-color: #45a049;
+    }
+    .search-form {
+      display: flex;
+      margin-left: auto;
+    }
+
+    .search-form input[type="text"] {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-right: 5px;
+    }
+
+    .search-form input[type="submit"] {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .search-form input[type="submit"]:hover {
+      background-color: #2980b9;
+    }
+
+  .dropdown {
+    display: inline-block;
+    position: relative;
+  }
+
+  .dropbtn {
+    background-color: #3498db;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    background-color: #f9f9f9;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    min-width: 160px;
+    right: 0; /* Position the dropdown to the right side of the button */
+  }
+
+  .dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #ddd;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  .home-link {
+    color: white;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-links">
+      <h1>E-Cart</h1>
+      <div>
+        <%= form_tag(search_path, method: :get, class: "search-form") do %>
+          <%= text_field_tag :query, params[:query], placeholder: "Search products" %>
+          <%= submit_tag "Search" %>
+        <% end %>
+      </div>
+      <div>
+        <a href="<%= root_path %>" class="home-link">Home</a>
+      <!-- Check if the user is signed in -->
+        <% if user_signed_in? %>
+          <div class="dropdown">
+            <button class="dropbtn">User Menu</button>
+            <div class="dropdown-content">
+              <%= link_to "Cart", cart_path %>
+              <% if current_user.role_id == 4 %> <!-- Add a check for seller status -->
+                <%= link_to "Add Product", category_pre_seller_path %> <!-- Link to the seller section -->
+              <% end %>
+              <%= link_to "Profile", edit_user_registration_path %>
+              <%= link_to "Logout", destroy_user_session_path, method: :delete %>
+            </div>
+          </div>
+        <% else %>
+          <div>
+            <%= link_to "Sign In", new_user_session_path %>
+            <%= link_to "Sign Up", new_user_registration_path %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </header>
+
+  <section id="featured-products">
+    <h2>Featured Products</h2>
+    <div class="product-grid">
+      <% @products.each do |product| %>
+        <div class="product">
+          <%= image_tag(product.product_image.url, alt: product.product_name, size: '256x256', class: "product-image") if product.product_image.present? %>
+          <h3><%= product.product_name %></h3>
+          <p><%= product.product_description %></p>
+          <p>Price: <%= product.product_price %></p>
+          <!-- Add more details as needed -->
+          <div class="product-buttons">
+            <%= button_to "Purchase", purchase_product_category_path(product), method: :get, class: "purchase-button" %>
+            <%= button_to "Add to Cart", add_to_cart_product_category_path(product), method: :post, class: "add-to-cart-button" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <section id="special-offers">
+    <h2>Special Offers</h2>
+    <!-- Display special offers or discounts here -->
+    <!-- Add your content here -->
+  </section>
+
+  <footer>
+    <!-- Include footer content, links, and other information -->
+    <p>&copy; 2024 My E-commerce Store. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
